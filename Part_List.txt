@@ -8,8 +8,8 @@ Part list:
 
 optional:
 
-3D printed case top
-3D printed case bottom
-3D printed case buttons
-8 x 2.5mm screw 8mm length
+3D printed case top (https://www.tinkercad.com/things/aQZSsm0lfPb)
+3D printed case bottom (https://www.tinkercad.com/things/aQZSsm0lfPb)
+3D printed case buttons (https://www.tinkercad.com/things/aQZSsm0lfPb)
+8 x M2.5 phillips self tapping screw, 8mm length
 4 5mm Rubber Stem Bumpers Screws
