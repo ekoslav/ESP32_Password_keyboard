@@ -1,0 +1,15 @@
+Part list:
+
+1 x ESP32 devkit 1 (30 pin or 36 pin)
+1 x 4x4 matrix keyboard
+1 x SD card reader
+1 x 5mm RGB LED  or  3 x 5mm LED ( red, green, blue )
+3 x 470 ohm resistor
+
+optional:
+
+3D printed case top
+3D printed case bottom
+3D printed case buttons
+8 x 2.5mm screw 8mm length
+4 5mm hole plugs
