@@ -57,3 +57,5 @@ Here is the list of available special characters:
 \d - adds ASCII char 127 - delete
 
 ------------------------------------------------------------------------------------------------------
+You can download 3D files for case here:
+https://www.tinkercad.com/embed/aQZSsm0lfPb
