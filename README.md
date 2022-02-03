@@ -21,12 +21,15 @@ The first line corresponds to the key "1", then 2 trough D, and the last is sequ
 Examples for macro sequences:
 
 1) just a plain text:
+
 somekeycombination
 
-2) text with tab key at the end
+2) text with tab key at the end:
+
 username\t
 
 3) text with enter key at the end:
+
 password\n
 
 or
@@ -34,6 +37,7 @@ or
 password\r\n
 
 4) text that has slash character ( exam\ple )
+
 exam\\ple
 
 ------------------------------------------------------------------------------------------------------
@@ -41,10 +45,15 @@ exam\\ple
 Here is the list of available special characters:
 
 \n - adds ASCII char 10 - line feed
+
 \r - adds ASCII char 13 - carriage return
+
 \t - adds ASCII char 9 - horizontal tab
+
 \e - adds ASCII char 27 - escape
+
 \b - adds ASCII char 8 - backspace
+
 \d - adds ASCII char 127 - delete
 
 ------------------------------------------------------------------------------------------------------
