@@ -1,8 +1,6 @@
 #include <Keypad.h>
 #include <BleKeyboard.h>
 BleKeyboard bleKeyboard("Macro_kbd_SN00001","ESP32 DEVKIT V1", 80);
-//BleKeyboard bleKeyboard("Macro_kbd_SN00002","ESP32 DEVKIT V1", 98);
-//BleKeyboard bleKeyboard("Macro_kbd_SN00002","ESP32-CAM", 80);
 
 #define LED_BUILTIN 2
 
