@@ -1,4 +1,4 @@
-\\ Version 1.0 Feb 1,2022
+// Version 1.0 Feb 1,2022
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
@@ -64,7 +64,6 @@ void readFile(fs::FS &fs, const char * path){
   Serial.printf("Reading file: %s\n", path);
   line=0;
   special=0;
-  ignorerest==0;
   File file = fs.open(path);
   memset(theArray, 0, sizeof(theArray));
   if(!file){
@@ -152,7 +151,7 @@ void loop()
 
   // BLE start
   if(bleKeyboard.isConnected()) {
-    if(btlink==0){btlink=1;Serial.println("BT connected!");}
+    if(btlink==0){btlink=1;nobtlink=0;Serial.println("BT connected!");}
     delay(10);
     char result = keypad.getKey();
     if (result != NO_KEY){
@@ -241,7 +240,7 @@ void loop()
     //ble not connected
     LEDblink(1,50,100,LED_BLUE);
     delay(500); // wait for .5 seconds
-    //Serial.println("No BT connection.");
+    if(nobtlink==0){nobtlink=1;btlink=0;Serial.println("No BT connection.");}
     
   }
 
