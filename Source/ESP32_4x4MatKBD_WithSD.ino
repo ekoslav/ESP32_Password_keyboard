@@ -15,6 +15,7 @@ int blinker=0;
 int btlink=0;
 int nobtlink=0;
 int loopind=0;
+int blocks=7; // Number of banks
 
 #define LED_RED   15
 #define LED_GREEN   2
@@ -173,7 +174,7 @@ void loop()
       else if (result=='#') {bleKeyboard.print(theArray[14]);}
       else if (result=='*') {
             //Serial.print("Star key pressed. Shift: ");Serial.print(shift);Serial.print(" pshift: ");Serial.println(pshift);
-            if (shift==7){pshift=0;}
+            if (shift==blocks){pshift=0;}
             else {pshift=pshift+1;} 
             String spshift = "/keys" + String(pshift);
             String filename = String(spshift) + ".txt" ;
