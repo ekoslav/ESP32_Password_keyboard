@@ -5,12 +5,13 @@
 
 #include <Keypad.h>
 #include <BleKeyboard.h>
-BleKeyboard bleKeyboard("Macro_kbd_SN00007","ESP32 DEVKIT V1", 98);
+BleKeyboard bleKeyboard("Macro_kbd_SN0000X","ESP32 DEVKIT V1", 98);
 
 String parameter;
 byte line;
 byte special;
 String theArray[15];
+String configArray[15];
 int blinker=0;
 int btlink=0;
 int nobtlink=0;
@@ -61,6 +62,40 @@ void LEDblink(int repeats, int tdelay,int tdelay2, int ledcolor){
   MISO - GPIO_19
  */
  
+void loadConfig(fs::FS &fs, const char * path){
+  Serial.printf("Reading file: %s\n", path);
+  line=0;
+  special=0;
+  File file = fs.open(path);
+  memset(configArray, 0, sizeof(configArray));
+  if(!file){
+    Serial.println("Failed to open file for reading");
+    return;
+  }
+  while(file.available()){
+    char c = file.read();
+
+  if (line<3){ // read only first 3 lines from the file
+    if (isPrintable(c))  //if not end of the line
+    {
+		parameter.concat(c);
+     
+      }
+    else if (c == '\n')  // this is end of the line
+        {
+        configArray[line] = parameter; // add collected chars to element in array  
+        Serial.print(".");
+        parameter = "";
+        line++;
+        }
+
+    }
+    
+  }
+ Serial.println();
+ file.close();
+}
+
 void readFile(fs::FS &fs, const char * path){
   Serial.printf("Reading file: %s\n", path);
   line=0;
