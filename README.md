@@ -9,7 +9,7 @@ Versions:
 Description:
 
 This project uses a ESP32, 4x4 matrix keyboard, an SD card reader, and a RGB LED.
-The goual is to create a macro / password keyboard with 8 banks of 15 key mappings.
+The goal is to create a macro / password keyboard with 8 banks of 15 key mappings.
 
 The star (*) key is used for shifting trought the key assignemnt banks.
 
