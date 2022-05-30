@@ -1,0 +1,15 @@
+zero1
+zero2
+zero3
+zero4
+zero5
+zero6
+zero7
+zero8
+zero9
+zero0
+zeroA
+zeroB
+zeroC
+zeroD
+zerohash
