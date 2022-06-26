@@ -1,4 +1,4 @@
-// Version 1.0 Feb 1,2022
+// Version 1.1 June 26,2022
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
@@ -584,7 +584,7 @@ else if (command == "setblocks")
       Serial.print("[INFO]: Number of pages set to  ");
       Serial.println(blocksp);
       Serial.print("Total pages: ");
-      Serial.println(blocks);
+      Serial.println(blocksp);
       SetPage(0);
       
       }
