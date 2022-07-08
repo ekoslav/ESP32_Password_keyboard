@@ -29,6 +29,7 @@ int bcounter=0;
 int ccounter=0;
 int dcounter=0;
 int typerate = 20;
+int pagerate[] = {20, 200, 20, 200, 20, 200, 20, 200}; //typing rates for pages - even pages type slow
 
 AsyncWebServer webserver(80);
 
@@ -172,7 +173,10 @@ void SetPage(int page){
  String filename = String(spshift) + ".txt" ;
  const char* shfilename =  filename.c_str();
  readFile(shfilename);
-  
+ typerate = pagerate[page];
+ Serial.print("[INFO]: typing speed is ");
+ Serial.print(typerate);
+ Serial.println(" ms");
   switch (page){
        case 0:
       SetLED("0","0","0");
@@ -666,10 +670,10 @@ else if (command == "help")
       else if (result=='8') {SendSequence(theArray[7]); }
       else if (result=='9') {SendSequence(theArray[8]); }
       else if (result=='0') {SendSequence(theArray[9]); }
-      else if (result=='A') {SendSequence(theArray[10]);acounter++;Serial.print("Key A pressed times:");Serial.println(acounter);}
-      else if (result=='B') {SendSequence(theArray[11]);bcounter++;Serial.print("Key B pressed times:");Serial.println(bcounter);}
-      else if (result=='C') {SendSequence(theArray[12]);ccounter++;Serial.print("Key C pressed times:");Serial.println(ccounter);}
-      else if (result=='D') {SendSequence(theArray[13]);dcounter++;Serial.print("Key D pressed times:");Serial.println(dcounter);}
+      else if (result=='A') {SendSequence(theArray[10]);acounter++;}
+      else if (result=='B') {SendSequence(theArray[11]);bcounter++;}
+      else if (result=='C') {SendSequence(theArray[12]);ccounter++;}
+      else if (result=='D') {SendSequence(theArray[13]);dcounter++;}
       else if (result=='#') {SendSequence(theArray[14]);}
       else if (result=='*') {
             Serial.print("Total pages: ");
@@ -678,7 +682,10 @@ else if (command == "help")
             else {pshift=pshift+1;} 
             SetPage(pshift);
             }
-        
+    Serial.print("Key A pressed times:");Serial.println(acounter);
+    Serial.print("Key B pressed times:");Serial.println(bcounter);
+    Serial.print("Key C pressed times:");Serial.println(ccounter);
+    Serial.print("Key D pressed times:");Serial.println(dcounter);   
     shift = pshift;
     delay(20); //prevent double keystrokes
     }
