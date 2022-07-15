@@ -1,7 +1,7 @@
 // Version 1.1 June 26,2022
-#include "FS.h"
-#include "SD.h"
-#include "SPI.h"
+#include <FS.h>
+#include <SD.h>
+#include <SPI.h>
 #include <SPIFFS.h>     // Filesystem support header
 #include <ArduinoJson.h> // Using ArduinoJson to read and write config files
 #include <WiFi.h> // Wifi support
@@ -11,7 +11,7 @@
 
 #include <Keypad.h>
 #include <BleKeyboard.h>
-BleKeyboard bleKeyboard("Macro_kbd_SN0000X","ESP32 DEVKIT V1", 98);
+BleKeyboard bleKeyboard("Macro_kbd_SN0AX","ESP32 DEVKIT V1", 98);
 
 String parameter;
 byte line;
@@ -71,52 +71,7 @@ void LEDblink(int repeats, int tdelay,int tdelay2, int ledcolor){
       }
   }
 
-void listAllFiles(){
- 
-  File root = SPIFFS.open("/");
- 
-  File file = root.openNextFile();
- 
-  while(file){
-       Serial.println(file.name());
-      file = root.openNextFile();
-      } 
-  }
 
-void readFile(const char * path){
-  Serial.printf("Reading file: %s\n", path);
-  line=0;
-  File file = SPIFFS.open(path);
-  memset(theArray, 0, sizeof(theArray));
-  if(!file){
-    Serial.println("Failed to open file for reading");
-    return;
-  }
-  while(file.available()){
-    char c = file.read();
-
-  if (line<15){ // read only first 15 lines from the file
-    if (isPrintable(c))  //if not end of the line
-    {
-       parameter.concat(c);
-      
-      }
-    else if (c == '\n')  // this is end of the line
-        {
-        theArray[line] = parameter; // add collected chars to element in array corresponding to the keyboard button 
-        Serial.print(".");
-        parameter = "";
-        line++;
-        }
-
-    }
-  
-  }
- Serial.println();
- Serial.println("Done.");
- Serial.println();
- file.close();
-}
 
 
 void SetLED(String red, String green, String blue){
@@ -246,6 +201,159 @@ void SetArrItem(char arkey, String arvalue)
     else {Serial.printf("Invalid key name");}    
 }
 
+void listAllFiles(){
+ 
+  File root = SPIFFS.open("/");
+ 
+  File file = root.openNextFile();
+ 
+  while(file){
+       Serial.println(file.name());
+      file = root.openNextFile();
+      } 
+  }
+
+void loadConfig (const char * path){
+  Serial.printf("Reading file: %s\n", path);
+  line=0;
+  File file = SPIFFS.open(path);
+  memset(configArray, 0, sizeof(configArray));
+  if(!file){
+    Serial.println("Failed to open file for reading");
+    return;
+  }
+  while(file.available()){
+    char c = file.read();
+
+  if (line<15){ // read only first 15 lines from the file
+    if (isPrintable(c))  //if not end of the line
+    {
+       parameter.concat(c);
+      
+      }
+    else if (c == '\n')  // this is end of the line
+        {
+        configArray[line] = parameter; // add collected chars to element in array corresponding to the keyboard button 
+        Serial.print(".");
+        parameter = "";
+        line++;
+        }
+
+    }
+  
+  }
+ Serial.println();
+ Serial.println("Done.");
+ Serial.println();
+ file.close();
+}
+
+void readFile(const char * path){
+  Serial.printf("Reading file: %s\n", path);
+  line=0;
+  File file = SPIFFS.open(path);
+  memset(theArray, 0, sizeof(theArray));
+  if(!file){
+    Serial.println("Failed to open file for reading");
+    return;
+  }
+  while(file.available()){
+    char c = file.read();
+
+  if (line<15){ // read only first 15 lines from the file
+    if (isPrintable(c))  //if not end of the line
+    {
+       parameter.concat(c);
+      
+      }
+    else if (c == '\n')  // this is end of the line
+        {
+        theArray[line] = parameter; // add collected chars to element in array corresponding to the keyboard button 
+        Serial.print(".");
+        parameter = "";
+        line++;
+        }
+
+    }
+  
+  }
+ Serial.println();
+ Serial.println("Done.");
+ Serial.println();
+ file.close();
+}
+
+void writeConfig(){
+  //-------------- begin write file ----------------
+ String filename = "/config/config.txt"; 
+ File file = SPIFFS.open(filename, "w");
+  if (!file) {
+    Serial.println("Error opening file for writing");
+    return;
+  }
+  Serial.println("[INFO]: file seem to open for writing. ");
+  //loop
+  int bytesWritten = 0;
+  int bytesLWritten = 0;
+  String fileline = "";
+  for (int i = 0; i < 15; i++) {
+        // write line from array
+        fileline = configArray[i];
+        Serial.print("[INFO]: writing line ");
+        Serial.print(i);
+        Serial.print(" : ");
+        Serial.println(fileline);
+        
+        bytesLWritten = file.println(fileline);
+        bytesWritten = bytesWritten + bytesLWritten;
+        Serial.print("[INFO]: bytes written: ");
+        Serial.println(bytesLWritten);
+        bytesLWritten = 0; 
+        }
+  Serial.print("[INFO]: Total bytes written: ");
+  Serial.println(bytesWritten);
+  if (bytesWritten == 0) {
+    Serial.println("Config File write failed");
+    //return;
+  }
+  file.close();
+  File file2 = SPIFFS.open(filename, "r");
+  if (!file2) {
+    Serial.println("Failed to open config file for reading");
+    return;
+  }
+  Serial.println("[INFO]: config file seem to open for reading. ");
+  Serial.println("Config File Content:");
+ 
+  while (file2.available()) {
+ 
+    Serial.write(file2.read());
+  }
+ 
+  file2.close();
+  
+  //---------------- end write file ----------------
+  }
+void readFile(String filename){
+  Serial.println("[INFO] Opening file for reading");
+  File file2 = SPIFFS.open(filename, "r");
+ 
+  if (!file2) {
+    Serial.println("Failed to open file for reading");
+    return;
+  }
+  Serial.println("[INFO]: file seem to open for reading. ");
+  Serial.println("File Content:");
+ 
+  while (file2.available()) {
+ 
+    Serial.write(file2.read());
+  }
+ 
+  file2.close();
+  Serial.println("[INFO] End of file");
+  }
+
 void writePage(int page){
   //-------------- begin write file ----------------
  Serial.print("[INFO]: Page number is ");
@@ -327,7 +435,9 @@ void SendSequence(String sequence){
             Serial.print(sequence.charAt(i));
             Serial.println("| ");
             Serial.println(i);
-                 if (sequence.charAt(i) == 'r') {special=0;bleKeyboard.write(KEY_RETURN);Serial.println("[KEY_RETURN]");}    //add CR
+            if (sequence.charAt(i) == 'r') {special=0;bleKeyboard.write(KEY_RETURN);Serial.println("[KEY_RETURN]");}    //add CR
+            else if (sequence.charAt(i) == 's') {special=0;bleKeyboard.write(32);Serial.println("[SPACE]");}    //add space
+            else if (sequence.charAt(i) == 'c') {special=0;bleKeyboard.write(':');Serial.println(":");}    //add colon
             else if (sequence.charAt(i) == 't') {special=0;bleKeyboard.write(KEY_TAB);Serial.println("[KEY_TAB]");}       //add horizontal tab
             else if (sequence.charAt(i) == '\\') {special=1;bleKeyboard.print('\\');Serial.println("[\\]");}       //Dual slash situation
             else {
@@ -370,7 +480,9 @@ void printHelp() {
       Serial.println("reboot");
       Serial.println("ls");
       Serial.println("rm");
+      Serial.println("cat");
       Serial.println("help");
+      Serial.println("setspeed XXX - sets typing speed at XXXms / char");
       Serial.println("fast - sets typing speed at 20ms / char");
       Serial.println("slow - sets typing speed at 200ms / char");
       Serial.println("extraslow - sets typing speed at 400ms / char");
@@ -383,10 +495,10 @@ void printHelp() {
       Serial.println("setkey KEY:Value");
       Serial.println("[EXAMPLE] setkey B:78456a$06\\r ");
       Serial.println("The key B is assigned sequence 78456a$06 with RETURN key at the end. ");
-      Serial.println("Options are \\r for RETURN key, and \\t for TAB key. ");
+      Serial.println("Options are \\r for RETURN key, \\t for TAB key, \\s for space, \\c for colon, \\\\ for \\. ");
       Serial.println();
       Serial.println("setled NUMBER[0-7]");
-      Serial.println("setblocks NUMBER[0-7]");
+      Serial.println("numofpages NUMBER[0-7]");
       Serial.println();
   
   }
@@ -450,7 +562,30 @@ void setup()
       file = root.openNextFile();
   }
   Serial.println("---------------------------");
-/*
+  //check for config files
+  Serial.println("[INFO]: checking for config files");
+   String filename = "/config/config.txt";
+   Serial.print(filename);
+   Serial.print(": ");
+   Serial.println(SPIFFS.exists(filename)); 
+      if (!SPIFFS.exists(filename)) {
+        //create file
+        Serial.print("[INFO] File ");
+        Serial.print(filename);
+        Serial.println(" does not exist.");
+        File file = SPIFFS.open(filename, "w");
+        for (int k = 0; k <= 15; k++) {
+              file.println("");
+            }
+        file.close();
+        Serial.print("[INFO] File ");
+        Serial.print(filename);
+        Serial.println(" created.");
+        }
+
+  Serial.println("[INFO]: end checking for key files");
+
+
   //check for key files
   Serial.println("[INFO]: checking for key files");
   for (int i = 0; i <= 7; i++) {
@@ -476,8 +611,9 @@ void setup()
   }
   Serial.println("[INFO]: end checking for key files");
 
-  */
+
   //load Keys0
+  loadConfig("/config.config.txt");
   readFile("/keys/keys0.txt");
 
 
@@ -579,20 +715,21 @@ else if (command == "setled")
       SetLED(red,green,blue);
       }
 
-else if (command == "setblocks")
+else if (command == "numofpages")
     {
       Serial.print("Original total pages: ");
       Serial.println(blocks);
       int blocksp = attribute.toInt();
       blocks =  blocksp-1;
+      configArray[0]=String(blocks);
       Serial.print("[INFO]: Number of pages set to  ");
       Serial.println(blocksp);
       Serial.print("Total pages: ");
       Serial.println(blocksp);
+      writeConfig;
       SetPage(0);
       
       }
-
 else if (command == "writepage")
     {
       Serial.print("[INFO]: Writing current keys to keys page ");
@@ -600,12 +737,38 @@ else if (command == "writepage")
       writePage(shift);
       }
 
-else if (command == "ls")
+else if (command == "writeconfig")
     {
-      Serial.println("[INFO]: lis of files on SPIFFS ");
-      listAllFiles();
+      Serial.print("[INFO]: Writing current configuration to file ");
+      Serial.println(shift);
+      writeConfig;
       }
 
+else if (command == "loadconfig")
+    {
+      Serial.print("[INFO]: Loading configuration from config file");
+      Serial.println(shift);
+      loadConfig("/config.config.txt");
+      }
+
+else if (command == "ls")
+    {
+      Serial.println("[INFO]: list of files on SPIFFS ");
+      listAllFiles();
+      }
+else if (command == "cat")
+    {
+      Serial.print("[INFO]: Content of the file ");
+      Serial.println(attribute);
+      readFile(attribute);
+      }
+else if (command == "setspeed")
+    {
+      typerate = attribute.toInt();    
+      Serial.print("[INFO]: typing speed is ");
+      Serial.print(typerate);
+      Serial.println(" ms");  
+      }
 else if (command == "fast")
     {
       typerate = 20;    
@@ -619,15 +782,7 @@ else if (command == "slow")
       Serial.print("[INFO]: typing speed is ");
       Serial.print(typerate);
       Serial.println(" ms");
-      }
-else if (command == "extraslow")
-    {
-      typerate = 400;
-      Serial.print("[INFO]: typing speed is ");
-      Serial.print(typerate);
-      Serial.println(" ms");
-      }
-           
+      }          
 else if (command == "rm")
     {
       
