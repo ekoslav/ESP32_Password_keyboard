@@ -11,7 +11,7 @@
 
 #include <Keypad.h>
 #include <BleKeyboard.h>
-BleKeyboard bleKeyboard("Macro_kbd_SN0AX","ESP32 DEVKIT V1", 98);
+BleKeyboard bleKeyboard("Macro_kbd_SN0CX","ESP32 DEVKIT V1", 98);
 
 String parameter;
 byte line;
@@ -72,7 +72,15 @@ void LEDblink(int repeats, int tdelay,int tdelay2, int ledcolor){
   }
 
 
-
+// populates the deviceName char with the device Prefix plus a "unique" 4 char code
+void getDeviceName(char* deviceName, char* devicePrefix) {
+    uint64_t chipid = ESP.getEfuseMac();
+    uint16_t shortid = chipid >> 32;
+    char sprintfString[20] = "";
+    strcat(sprintfString, devicePrefix);
+    strcat(sprintfString, "_%04X");
+    sprintf(deviceName, sprintfString, shortid);
+}
 
 void SetLED(String red, String green, String blue){
 int lred;
@@ -523,9 +531,18 @@ void setup()
     Serial.print("Boot started.");
     Serial.println();
     delay(10);
+
+          // derive a unique name
+    char deviceName[20];
+    getDeviceName(deviceName, "Macro_kbd");
+    bleKeyboard.setName(deviceName);
+    Serial.print("DN:");
+    Serial.println(deviceName);
+    
     bleKeyboard.begin();
     Serial.println("---------------------------"); 
-  
+     
+
    // -------------- Start filesystem ----------------------
   if (!SPIFFS.begin(true)) {
     Serial.println("An Error has occurred while mounting SPIFFS");
@@ -622,6 +639,8 @@ void setup()
     Serial.println("---------------------------");
     printHelp();
     Serial.println("---------------------------");
+
+
 }
 
 void loop()
