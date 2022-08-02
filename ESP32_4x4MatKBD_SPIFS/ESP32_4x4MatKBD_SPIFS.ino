@@ -73,6 +73,7 @@ void LEDblink(int repeats, int tdelay,int tdelay2, int ledcolor){
 
 
 // populates the deviceName char with the device Prefix plus a "unique" 4 char code
+// thanks to webmonkey (https://github.com/webmonkey)
 void getDeviceName(char* deviceName, char* devicePrefix) {
     uint64_t chipid = ESP.getEfuseMac();
     uint16_t shortid = chipid >> 32;
@@ -532,11 +533,11 @@ void setup()
     Serial.println();
     delay(10);
 
-          // derive a unique name
+    // Apply name based on MAC
     char deviceName[20];
     getDeviceName(deviceName, "Macro_kbd");
     bleKeyboard.setName(deviceName);
-    Serial.print("DN:");
+    Serial.print("Nabme of BT device:");
     Serial.println(deviceName);
     
     bleKeyboard.begin();
