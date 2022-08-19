@@ -11,7 +11,7 @@
 
 #include <Keypad.h>
 #include <BleKeyboard.h>
-BleKeyboard bleKeyboard("Macro_kbd_SN0CX","ESP32 DEVKIT V1", 98);
+BleKeyboard bleKeyboard("Macro_kbd_MAC","ESP32 DEVKIT V1", 98);
 
 String parameter;
 byte line;
@@ -95,6 +95,9 @@ digitalWrite(LED_GREEN, lgreen);
 digitalWrite(LED_BLUE, lblue);
 }
 
+void TestPrintln(){
+  Serial.println("Test success");
+  }
 
 void CopyToPage(int page){
  Serial.print("Moving all keys to page #");
@@ -222,10 +225,10 @@ void listAllFiles(){
       } 
   }
 
-void loadConfig (const char * path){
-  Serial.printf("Reading file: %s\n", path);
+void loadConfig (){
+  Serial.printf("Reading file: /config/config.txt");
   line=0;
-  File file = SPIFFS.open(path);
+  File file = SPIFFS.open("/config/config.txt");
   memset(configArray, 0, sizeof(configArray));
   if(!file){
     Serial.println("Failed to open file for reading");
@@ -233,22 +236,17 @@ void loadConfig (const char * path){
   }
   while(file.available()){
     char c = file.read();
-
-  if (line<15){ // read only first 15 lines from the file
-    if (isPrintable(c))  //if not end of the line
-    {
-       parameter.concat(c);
-      
-      }
-    else if (c == '\n')  // this is end of the line
-        {
-        configArray[line] = parameter; // add collected chars to element in array corresponding to the keyboard button 
-        Serial.print(".");
-        parameter = "";
-        line++;
-        }
-
-    }
+    if (line<15){ // read only first 15 lines from the file
+                if (isPrintable(c))  //if not end of the line  
+                  {parameter.concat(c);
+                   }
+                else if (c == '\n')  // this is end of the line 
+                  { configArray[line] = parameter; // add collected chars to element in array corresponding to the keyboard button 
+                    Serial.print(".");
+                    parameter = "";
+                    line++;
+                    }
+              }
   
   }
  Serial.println();
@@ -295,6 +293,7 @@ void readFile(const char * path){
 void writeConfig(){
   //-------------- begin write file ----------------
  String filename = "/config/config.txt"; 
+ Serial.println(filename);
  File file = SPIFFS.open(filename, "w");
   if (!file) {
     Serial.println("Error opening file for writing");
@@ -343,24 +342,23 @@ void writeConfig(){
   
   //---------------- end write file ----------------
   }
+  
 void readFile(String filename){
-  Serial.println("[INFO] Opening file for reading");
-  File file2 = SPIFFS.open(filename, "r");
- 
-  if (!file2) {
+  Serial.print("[INFO] Opening file ");
+  Serial.print(filename);
+  Serial.println(" for reading");
+  File file = SPIFFS.open(filename, "r");
+  if (!file) {
     Serial.println("Failed to open file for reading");
     return;
   }
   Serial.println("[INFO]: file seem to open for reading. ");
   Serial.println("File Content:");
- 
-  while (file2.available()) {
- 
-    Serial.write(file2.read());
-  }
- 
-  file2.close();
-  Serial.println("[INFO] End of file");
+  while (file.available()) {
+    Serial.write(file.read());
+    }
+  file.close();
+  Serial.println("End of file");
   }
 
 void writePage(int page){
@@ -537,9 +535,7 @@ void setup()
     char deviceName[20];
     getDeviceName(deviceName, "Macro_kbd");
     bleKeyboard.setName(deviceName);
-    Serial.print("Nabme of BT device:");
-    Serial.println(deviceName);
-    
+    //Start BT kbd
     bleKeyboard.begin();
     Serial.println("---------------------------"); 
      
@@ -567,9 +563,9 @@ void setup()
 
   Serial.print("[INFO]: Total Space: ");
   Serial.println(FILESYSTEM.totalBytes());
-  Serial.print("[INFO]: Free Space: ");
+  Serial.print("[INFO]:  Free Space: ");
   Serial.println(FILESYSTEM.totalBytes() - FILESYSTEM.usedBytes());
-
+/*
   Serial.println("---------------------------");
   Serial.println("      SPIFS content");
   Serial.println("---------------------------");
@@ -580,6 +576,8 @@ void setup()
       file = root.openNextFile();
   }
   Serial.println("---------------------------");
+*/  
+/*  
   //check for config files
   Serial.println("[INFO]: checking for config files");
    String filename = "/config/config.txt";
@@ -600,10 +598,9 @@ void setup()
         Serial.print(filename);
         Serial.println(" created.");
         }
-
+*/
+/*
   Serial.println("[INFO]: end checking for key files");
-
-
   //check for key files
   Serial.println("[INFO]: checking for key files");
   for (int i = 0; i <= 7; i++) {
@@ -628,10 +625,10 @@ void setup()
         }
   }
   Serial.println("[INFO]: end checking for key files");
-
+*/
 
   //load Keys0
-  loadConfig("/config.config.txt");
+  loadConfig;
   readFile("/keys/keys0.txt");
 
 
@@ -651,7 +648,7 @@ void loop()
   //Check commands over serial  
   if (Serial.available())
   {
-    String input = Serial.readStringUntil('\r');
+    String input = Serial.readStringUntil(10);
     String command = getValue(input, ' ', 0);
     String attribute = getValue(input, ' ', 1);
     Serial.print("[INFO]: Command: ");
@@ -741,12 +738,12 @@ else if (command == "numofpages")
       Serial.println(blocks);
       int blocksp = attribute.toInt();
       blocks =  blocksp-1;
-      configArray[0]=String(blocks);
+      configArray[0]=String(blocksp);
       Serial.print("[INFO]: Number of pages set to  ");
       Serial.println(blocksp);
       Serial.print("Total pages: ");
       Serial.println(blocksp);
-      writeConfig;
+      writeConfig();
       SetPage(0);
       
       }
@@ -757,31 +754,11 @@ else if (command == "writepage")
       writePage(shift);
       }
 
-else if (command == "writeconfig")
-    {
-      Serial.print("[INFO]: Writing current configuration to file ");
-      Serial.println(shift);
-      writeConfig;
-      }
-
-else if (command == "loadconfig")
-    {
-      Serial.print("[INFO]: Loading configuration from config file");
-      Serial.println(shift);
-      loadConfig("/config.config.txt");
-      }
-
-else if (command == "ls")
-    {
-      Serial.println("[INFO]: list of files on SPIFFS ");
-      listAllFiles();
-      }
-else if (command == "cat")
-    {
-      Serial.print("[INFO]: Content of the file ");
-      Serial.println(attribute);
-      readFile(attribute);
-      }
+else if (command == "writeconfig") {writeConfig();}
+else if (command == "loadconfig")  {loadConfig();}
+else if (command == "ls") {Serial.println("[INFO]: list of files on SPIFFS "); listAllFiles(); }
+else if (command == "test") {TestPrintln();}
+else if (command == "cat"){Serial.print("[INFO]: Content of the file ");Serial.println(attribute);readFile(attribute);}
 else if (command == "setspeed")
     {
       typerate = attribute.toInt();    
