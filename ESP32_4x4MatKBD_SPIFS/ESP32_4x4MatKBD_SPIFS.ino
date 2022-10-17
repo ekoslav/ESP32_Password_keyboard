@@ -1,4 +1,4 @@
-// Version 1.1 June 26,2022
+String version ="Version 1.1 June 26,2022";
 #include <FS.h>
 #include <SD.h>
 #include <SPI.h>
@@ -316,7 +316,7 @@ void writeConfig(){
         bytesWritten = bytesWritten + bytesLWritten;
         Serial.print("[INFO]: bytes written: ");
         Serial.println(bytesLWritten);
-        bytesLWritten = 0; 
+        # bytesLWritten = 0; 
         }
   Serial.print("[INFO]: Total bytes written: ");
   Serial.println(bytesWritten);
@@ -481,6 +481,7 @@ void SendSequence(String sequence){
   }
 
 void printHelp() {
+      Serial.println(version);
       Serial.println("[INFO]: Available commands: ");
       Serial.println("All commands require one space unless they have attribute following command. ");
       Serial.println();
@@ -752,6 +753,11 @@ else if (command == "writepage")
       Serial.print("[INFO]: Writing current keys to keys page ");
       Serial.println(shift);
       writePage(shift);
+      }
+
+else if (command == "version")
+    {
+      Serial.println(version);
       }
 
 else if (command == "writeconfig") {writeConfig();}
